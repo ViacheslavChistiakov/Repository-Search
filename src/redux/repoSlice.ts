@@ -7,18 +7,23 @@ export interface Repo {
     description?: string | null;
     html_url: string;
     stargazers_count?: number;
+    updated_at?: string | null;
 };
 
 interface RepoState {
     repos: Repo[];
     loading: boolean;
     error: string | null;
+    page: number;
+    hasMore: boolean;
 };
 
 const initialState: RepoState = {
     repos: [],
     loading: false,
-    error: null
+    error: null,
+    page: 1,
+    hasMore: true,
 }
 
 const octokit = new Octokit({
@@ -27,16 +32,22 @@ const octokit = new Octokit({
 
 export const fetchRepos = createAsyncThunk(
     "repos/fetchRepos",
-    async (userName: string, { rejectWithValue }) => {
+    async ({userName, page}: {userName: string, page: number}, { rejectWithValue }) => {
     try {
         console.log(`Fetching GitHub repos for: ${userName}`);
         const response = await octokit.request("GET /users/{username}/repos", {
             username: userName,
+            per_page: 20, 
+            page,
             headers: {
                 "X-GitHub-Api-Version": "2022-11-28"
             }
         });
-        return response.data;
+        return {
+            data: response.data,
+            page,
+            hasMore: response.data.length === 20,
+        } 
 
     } catch (err: unknown) {
         console.error("GitHub API Error:", err);
@@ -51,7 +62,13 @@ export const fetchRepos = createAsyncThunk(
 const repoSlice = createSlice({
     name: "repos",
     initialState,
-    reducers: {},
+    reducers: {
+        resetRepos: (state) => {
+            state.repos = [];
+            state.page = 1;
+            state.hasMore = true;
+          },
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchRepos.pending, (state) => {
             state.loading = true;
@@ -59,7 +76,9 @@ const repoSlice = createSlice({
         });
         builder.addCase(fetchRepos.fulfilled, (state, action) => {
             state.loading = false;
-            state.repos = action.payload;
+            state.repos = action.payload.page === 1 ? action.payload.data : [...state.repos, ...action.payload.data];
+            state.hasMore = action.payload.hasMore;
+            state.page = action.payload.page;
         });
         builder.addCase(fetchRepos.rejected, (state, action) => {
             state.loading = false;
