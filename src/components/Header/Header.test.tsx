@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { expect, jest, test } from '@jest/globals';
 import { Header } from "./Header";
