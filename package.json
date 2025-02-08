@@ -1,11 +1,12 @@
 {
   "name": "tailwindcss4",
   "private": true,
+  "homepage": "https://viacheslavchistiakov.github.io/Repository-Search/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d dist",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "jest --watch",
