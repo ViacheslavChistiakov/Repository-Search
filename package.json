@@ -1,7 +1,7 @@
 {
   "name": "tailwindcss4",
   "private": true,
-  "homepage": "https://viacheslavchistiakov.github.io/Repository-Search/",
+  "homepage": "https://viacheslavchistiakov.github.io/Repository-Search",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
