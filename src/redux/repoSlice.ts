@@ -3,11 +3,15 @@ import axios from "axios";
 import { Octokit } from "@octokit/core";
 
 export interface Repo {
+    id: number;
+    node_id: string;
     name: string;
-    description?: string | null;
+    description: string | null;
+    full_name: string;
+    owner: { login: string };
     html_url: string;
     stargazers_count?: number;
-    updated_at?: string | null;
+    updated_at?: string | null | undefined;
 };
 
 interface RepoState {
@@ -29,6 +33,7 @@ const initialState: RepoState = {
 const octokit = new Octokit({
     auth: import.meta.env.VITE_GITHUB_TOKEN 
 });
+
 
 export const fetchRepos = createAsyncThunk(
     "repos/fetchRepos",
@@ -87,6 +92,7 @@ const repoSlice = createSlice({
     }
 })
 
+export const { resetRepos } = repoSlice.actions; 
 export default repoSlice.reducer;
 
 
